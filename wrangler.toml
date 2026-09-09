@@ -1,0 +1,9 @@
+name = "telegram-coaching-bot"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+# Create this with: npx wrangler kv namespace create USERS
+# Then paste the returned id below.
+[[kv_namespaces]]
+binding = "USERS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
