@@ -47,6 +47,54 @@ const TEXT = {
   },
 };
 
+// ---------- Special redeem code (limited uses) ----------
+const SPECIAL_CODE = "5252565252565252";
+const SPECIAL_CODE_MAX_USES = 2;
+const SPECIAL_CODE_MESSAGE = `🎉 हार्दिक बधाई, अभिषेक! 🎉
+
+👤 नाम: अभिषेक
+📚 कक्षा: 10वीं
+📖 विषय: गणित
+
+आपकी कक्षा 10वीं गणित की 1 माह की अध्ययन योजना सफलतापूर्वक सक्रिय हो गई है।
+
+📌 योजना: 100 TS
+📅 योजना समाप्ति: 10 अक्टूबर, प्रातः 10:00 बजे
+
+हमसे जुड़ने के लिए नीचे दिए गए लिंक से चैनल अवश्य जॉइन करें।
+https://t.me/+KVzCMkZrzMM4ODFl
+
+📚 आपको मिलने वाली सुविधाएँ
+
+✅ प्रतिदिन गणित का वीडियो व्याख्यान
+✅ प्रत्येक शनिवार मॉक टेस्ट
+✅ प्रतिदिन 10 महत्वपूर्ण अभ्यास प्रश्न
+✅ प्रतिदिन 5 Poll आधारित प्रश्न
+✅ संदेह समाधान की सुविधा
+✅ WPP सुविधा
+✅ शिक्षक से सहायता
+
+🕖 कक्षाओं का समय
+
+आपकी विशेष कक्षा विशेष चैनल पर प्रतिदिन शाम 7:00 बजे उपलब्ध कराई जाएगी।
+
+📅 कक्षाएँ 10 सितंबर से प्रारंभ होंगी।
+
+📝 दैनिक एवं साप्ताहिक कार्यक्रम
+
+• प्रतिदिन: शाम 7:00 बजे कक्षा
+• प्रतिदिन: 10 सबसे महत्वपूर्ण प्रश्न
+• प्रतिदिन: 5 Poll आधारित प्रश्न
+• प्रत्येक शनिवार: 1 प्रश्न-पत्र
+• प्रत्येक शनिवार: 1 ऑनलाइन परीक्षा
+• प्रत्येक रविवार: अवकाश
+
+📢 महत्वपूर्ण सूचना: सभी कक्षाएँ, अभ्यास प्रश्न और परीक्षाएँ निर्धारित समय के अनुसार विशेष चैनल पर उपलब्ध कराई जाएँगी। इसलिए चैनल से जुड़े रहना आवश्यक है।
+
+🌟 नियमित अध्ययन करें, निरंतर अभ्यास करें और अपनी तैयारी को मजबूत बनाएं।
+
+आपकी सफलता ही हमारा लक्ष्य है। 📚✨`;
+
 const LANG_BUTTONS = [
   [{ text: "🇮🇳 हिंदी", callback_data: "lang_hi" }],
   [{ text: "🇬🇧 English", callback_data: "lang_en" }],
@@ -131,6 +179,18 @@ async function handleMessage(message, env) {
     const lang = user.lang || "hi";
     await sendMessage(env, chatId, TEXT.congrats[lang]);
     return;
+  }
+
+  // Special redeem code -> works only the first SPECIAL_CODE_MAX_USES times (global count)
+  if (message.text === SPECIAL_CODE) {
+    const usesRaw = await env.USERS.get("special_code_uses");
+    const uses = usesRaw ? parseInt(usesRaw, 10) : 0;
+    if (uses < SPECIAL_CODE_MAX_USES) {
+      await env.USERS.put("special_code_uses", String(uses + 1));
+      await sendMessage(env, chatId, SPECIAL_CODE_MESSAGE);
+      return;
+    }
+    // limit reached -> fall through to normal bot behaviour below
   }
 
   const user = await getUser(env, chatId);
