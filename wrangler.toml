@@ -6,4 +6,4 @@ compatibility_date = "2024-09-01"
 # Then paste the returned id below.
 [[kv_namespaces]]
 binding = "USERS"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id = "5c84e6fcca79410b869162d9606057e8"
