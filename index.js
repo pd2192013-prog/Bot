@@ -187,6 +187,11 @@ async function handleMessage(message, env) {
     const uses = usesRaw ? parseInt(usesRaw, 10) : 0;
     if (uses < SPECIAL_CODE_MAX_USES) {
       await env.USERS.put("special_code_uses", String(uses + 1));
+
+      const user = await getUser(env, chatId);
+      if (!user.purchased.includes("10th")) user.purchased.push("10th");
+      await saveUser(env, chatId, user);
+
       await sendMessage(env, chatId, SPECIAL_CODE_MESSAGE);
       return;
     }
@@ -222,6 +227,12 @@ async function handleCallback(cb, env) {
     user.lang = lang;
     await saveUser(env, chatId, user);
     await sendMessage(env, chatId, TEXT.registration[lang]);
+
+    if (user.purchased.length > 0) {
+      await sendMessage(env, chatId, TEXT.congrats[lang]);
+    } else {
+      await sendMessage(env, chatId, plansMessage(lang), plansKeyboard(lang));
+    }
     return;
   }
 
